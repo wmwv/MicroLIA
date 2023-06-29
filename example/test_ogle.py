@@ -32,7 +32,7 @@ def train(dirname=os.getenv("HOME"), name="test"):
 
     # By default the file is saved in the home directory
     data = np.loadtxt(
-        os.path.join(dirname, "all_features_.txt"), dtype=str, comments="#"
+        os.path.join(dirname, "all_features.txt"), dtype=str, comments="#"
     )
 
     data_x = data[:, 2:].astype("float")
@@ -45,17 +45,18 @@ def train(dirname=os.getenv("HOME"), name="test"):
 
 def predict_ogle(model, path="OGLE_II", suffix="*.dat"):
     filenames = get_data_filenames(path, suffix)
-    file = filenames[0]
-    time, mag, magerr = np.loadtxt(file, unpack=True)
+    this_file = filenames[0]
+    time, mag, magerr = np.loadtxt(this_file, unpack=True)
 
     prediction = model.predict(time, mag, magerr, convert=True, zp=22)
 
     return prediction
 
 
-def run(csv_file=os.path.join(os.getenv("HOME"), "MicroLIA_Training_Set_test_.csv")):
+def run(csv_file=os.path.join(os.getenv("HOME"), "MicroLIA_Training_Set.csv")):
 #    train()
-    model = ensemble_model.Classifier(csv_file)
+    df = pd.read_csv(csv_file)
+    model = ensemble_model.Classifier(csv_file=df)
     predict_ogle(model)
 
 
