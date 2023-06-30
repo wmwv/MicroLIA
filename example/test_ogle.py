@@ -2,6 +2,7 @@ import glob
 import os
 
 import numpy as np
+import pandas as pd
 
 from MicroLIA import ensemble_model, training_set
 
@@ -38,9 +39,9 @@ def train(dirname=os.getenv("HOME"), name="test"):
     data_x = data[:, 2:].astype("float")
     data_y = data[:, 0]
 
-    model = ensemble_model.Classifier(data_x, data_y, n_iter=25, boruta_trials=25)
-    model.create(filename=name)
-    model.save(filename=name)
+    model = ensemble_model.Classifier(data_x, data_y, n_iter=25, boruta_trials=25, impute=True)
+    model.create()
+    model.save()
 
 
 def predict_ogle(model, path="OGLE_II", suffix="*.dat"):
@@ -56,8 +57,11 @@ def predict_ogle(model, path="OGLE_II", suffix="*.dat"):
 def run(csv_file=os.path.join(os.getenv("HOME"), "MicroLIA_Training_Set.csv")):
 #    train()
     df = pd.read_csv(csv_file)
+    # The keyword name is "csv_file", but it wants a Pandas DataFrame
     model = ensemble_model.Classifier(csv_file=df)
-    predict_ogle(model)
+    model.load()
+    prediction = predict_ogle(model)
+    print(prediction)
 
 
 if __name__ == "__main__":
